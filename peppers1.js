@@ -9,7 +9,19 @@ let pepperNames = [ "birds-eye",    "cayenne",    "fatalii",    "habanero",
 let pepperWidths =  [100,120,140,120,120,120,120,120,100,140,120,100];
 let pepperHeights = [150,180,210,180,180,180,180,180,150,210,180,150];
 
-let rows = [7, 3, 5, 0, 1, 2, 4, 6];
+let rows = [7, 3, 5, 4, 0, 1, 2, 6];
+let runningFrames = {0:[0, 0, 0, 0, 0, 0],
+                     1:[0, 0, 0, 0, 0, 0],
+                     2:[1, 1, 2, 3, 3, 4],
+                     3:[3, 3, 4, 1, 1, 2],
+                     4:[1, 2, 3, 4, 5, 6],
+                     5:[4, 5, 6, 1, 2, 3],
+                     6:[0, 0, 0, 0, 0, 0],
+                     7:[0, 0, 0, 0, 0, 0],
+                     11:[0, 1, 3, 4, 5, 7],
+                     12:[0, 0, 1, 2, 2, 3],
+                     13:[1, 1, 2, 3, 3, 0]};
+
 let columns = { "birds-eye":    {0:1, 1:1, 2:5, 3:5, 4:7, 5:7},
                 "cayenne":      {0:1, 1:1, 2:5, 3:5, 4:7, 5:7, 6:6},
                 "fatalii":      {0:1, 1:1, 2:5, 3:5, 4:7, 5:7},
@@ -57,7 +69,8 @@ function redraw(timestamp) {
     if (lastTimestamp === 0) lastTimestamp = timestamp;
     const frameLength = (timestamp - lastTimestamp) / 1000;
     lastTimestamp = timestamp;
-    t += frameLength * 10;
+    t += frameLength * 20;
+    if (t > 6) t = 0;
 
     const canvas = document.getElementById('pepperCanvas');
     const context = canvas.getContext('2d');
@@ -73,24 +86,27 @@ function redraw(timestamp) {
             if (row * pepperHeights[p] > pepperSprites[p].height) continue;
 
             let cols = columns[pepperNames[p]][row]
+
             let twoArms = false;
             if (cols == 10) {
                 twoArms = true;
                 cols = 5;
             }
 
-            let col = Math.floor(t) % cols;
+            context.drawImage(pepperSprites[p],
+                    (twoArms && row == 2 ? 5 : 0) * pepperWidths[p],
+                    row * pepperHeights[p],
+                    pepperWidths[p], pepperHeights[p],
+                    130-pepperWidths[p]/2+p*150,
+                    410-pepperHeights[p],
+                    pepperWidths[p], pepperHeights[p]);
 
-            if (row > 1 && cols != 4) {
-                let offset = 0;
-                if (row == 5) offset = 3;
-                if (row == 3 && cols == 5) offset = 2;
-                if (row == 2 && cols == 10) extra = 5;
-                let pace = 1;
-                if (cols == 5) pace = 0.6667;
-                col = Math.floor(t*pace + offset) % (cols-1) + 1;
-                if (twoArms  && row == 2) col += 5;
-            }
+            let col = runningFrames[row][Math.floor(t)];
+            if (p == 6 && row == 1) col = runningFrames[11][Math.floor(t)]; // naga eyes
+            if (p == 8 && row == 2) col = runningFrames[12][Math.floor(t)]; // pequin arms
+            if (p == 8 && row == 3) col = runningFrames[13][Math.floor(t)]; // pequin arms
+
+            if (twoArms && row == 2) col += 5;
 
             context.drawImage(pepperSprites[p],
                     col * pepperWidths[p],
@@ -98,9 +114,25 @@ function redraw(timestamp) {
                     pepperWidths[p],
                     pepperHeights[p],
                     130-pepperWidths[p]/2+p*150,
-                    410-pepperHeights[p],
+                    660-pepperHeights[p],
                     pepperWidths[p],
                     pepperHeights[p]);
+
+            if (twoArms && row == 2) col -= 5;
+            if (twoArms && row == 3) col += 5;
+
+            context.scale(-1,1);
+            context.drawImage(pepperSprites[p],
+                  col * pepperWidths[p],
+                  row * pepperHeights[p],
+                  pepperWidths[p],
+                  pepperHeights[p],
+                  -w+150-pepperWidths[p]/2+p*150,
+                  910-pepperHeights[p],
+                  pepperWidths[p],
+                  pepperHeights[p]);
+            context.scale(-1,1);
+
         }
     }
 
