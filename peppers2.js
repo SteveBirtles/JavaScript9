@@ -197,7 +197,7 @@ function redraw(timestamp) {
 
     for (let p = 0; p < 24; p++) {
 
-      for (let r = 0; r < 9; r++) {
+      for (let r = 0; r < h/120; r++) {
 
         let pepper = (p+r*5) % 12;
 
