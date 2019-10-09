@@ -195,7 +195,10 @@ function redraw(timestamp) {
     context.fillStyle = 'black';
     context.fillRect(0, 0, w, h);
 
-    for (let p = 0; p < 24; p++) {
+    let repeats = Math.floor(w/1200) + 1;
+    let maxX = 1200 * repeats;
+
+    for (let p = 0; p < 12*repeats; p++) {
 
       for (let r = 0; r < h/120; r++) {
 
@@ -206,19 +209,19 @@ function redraw(timestamp) {
         switch (r % 4) {
           case 0:
             frame = Math.floor((t + p) % 6) + 1;
-            x = (t * 16 + p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
+            x = (t * 16 + p*100) % maxX - 100 + 35-pepperWidths[pepper]/4;
             break;
           case 1:
             frame = 0;
-            x = (p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
+            x = (p*100) % maxX - 100 + 35-pepperWidths[pepper]/4;
             break;
           case 2:
             frame = Math.floor((t + p) % 6) + 8;
-            x = 2400 - (t * 16 + p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
+            x = maxX - (t * 16 + p*100) % maxX - 100 + 35-pepperWidths[pepper]/4;
             break;
           case 3:
             frame = 7;
-            x = 2400 - (p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
+            x = maxX - (p*100) % maxX - 100 + 35-pepperWidths[pepper]/4;
             break;
       }
 
