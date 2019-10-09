@@ -97,7 +97,7 @@ function renderPeppers() {
             if (p == 8 && row == 2) col = runningFrames[12][Math.floor(t)]; // pequin arms
             if (p == 8 && row == 3) col = runningFrames[13][Math.floor(t)]; // pequin arms
 
-            if (twoArms && row == 2) col += 5;
+            if (twoArms && row == 3) col += 5;
 
             context.save();
             context.translate((1+t)*pepperWidths[p], y);
@@ -111,8 +111,8 @@ function renderPeppers() {
                     pepperHeights[p]);
             context.restore();
 
-            if (twoArms && row == 2) col -= 5;
-            if (twoArms && row == 3) col += 5;
+            if (twoArms && row == 3) col -= 5;
+            if (twoArms && row == 2) col += 5;
 
             context.save();
             context.translate(8*pepperWidths[p], y);
@@ -209,11 +209,11 @@ function redraw(timestamp) {
             x = (t * 16 + p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
             break;
           case 1:
-            frame = 0;                        
+            frame = 0;
             x = (p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
             break;
           case 2:
-            frame = Math.floor((t + p) % 6) + 7;
+            frame = Math.floor((t + p) % 6) + 8;
             x = 2400 - (t * 16 + p*100) % 2400 - 100 + 35-pepperWidths[pepper]/4;
             break;
           case 3:

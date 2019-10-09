@@ -106,7 +106,7 @@ function redraw(timestamp) {
             if (p == 8 && row == 2) col = runningFrames[12][Math.floor(t)]; // pequin arms
             if (p == 8 && row == 3) col = runningFrames[13][Math.floor(t)]; // pequin arms
 
-            if (twoArms && row == 2) col += 5;
+            if (twoArms && row == 3) col += 5;
 
             context.drawImage(pepperSprites[p],
                     col * pepperWidths[p],
@@ -118,8 +118,8 @@ function redraw(timestamp) {
                     pepperWidths[p],
                     pepperHeights[p]);
 
-            if (twoArms && row == 2) col -= 5;
-            if (twoArms && row == 3) col += 5;
+            if (twoArms && row == 3) col -= 5;
+            if (twoArms && row == 2) col += 5;
 
             context.scale(-1,1);
             context.drawImage(pepperSprites[p],
