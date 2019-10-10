@@ -11,7 +11,7 @@ const tileHeight = 128;
 
 let tile = [];
 
-let map = [], mapFilename = 'map.json';
+let map = [], mapFilename, cachedMaps = [];
 
 let mousePosition = {x: 0, y: 0}, lastMousePosition = {x: 0, y: 0}, leftMouseDown = false, rightMouseDown = false, keyDown = false;
 
@@ -216,7 +216,6 @@ function processJSON(json) {
         peppers = data.peppers;
 
         peppers = peppers.filter(function(pepper){
-            console.log(pepper);
             return  pepper.hasOwnProperty("x") &&
                     pepper.hasOwnProperty("y") &&
                     pepper.hasOwnProperty("n") &&
@@ -228,8 +227,6 @@ function processJSON(json) {
             pepper.startY = pepper.y;
             pepper.startD = pepper.d;
         }
-
-        console.log(peppers.length + " peppers loaded.");
 
     }
 
@@ -253,13 +250,39 @@ function saveSession() {
         }
     }
 
-    localStorage.setItem("map", generateJSON());
+    localStorage.setItem("#mapFilename", mapFilename);
+    localStorage.setItem(mapFilename, generateJSON());
+
+    refreshCacheList();
 
 }
 
+function refreshCacheList() {
+
+    cachedMaps = [];
+    let cacheHTML = "";
+    for (let key of Object.keys(localStorage)) {
+        if (key == "#mapFilename") continue;
+        cachedMaps.push(key);
+        cacheHTML += "<li>" + key + (mapFilename == key ? " *" : "") + "</li>";
+    }
+    document.getElementById("cachedMaps").innerHTML = cacheHTML;
+
+}
 
 function pageLoad() {
 
+    mapFilename = localStorage.getItem("#mapFilename")
+    if (mapFilename == "undefined" || mapFilename == null) mapFilename = "untitled.json";
+
+    const mapTextbox = document.getElementById('mapName');
+    mapTextbox.value = mapFilename;
+    mapTextbox.addEventListener("keydown", function(event) {
+        mapFilename = mapTextbox.value;
+        event.stopPropagation();
+    }, false);
+
+    refreshCacheList();
     window.onbeforeunload = saveSession;
 
     window.addEventListener("resize", fixSize);
@@ -284,7 +307,7 @@ function pageLoad() {
         tile[i].onload = postLoad;
     }
 
-    processJSON(localStorage.getItem("map"));
+    processJSON(localStorage.getItem(mapFilename));
 
     window.addEventListener("keydown", event => pressedKeys[event.key] = true);
     window.addEventListener("keyup", event => {
@@ -311,7 +334,7 @@ function pageLoad() {
         }
     }, false);
 
-    window.addEventListener("wheel", event => {
+    canvas.addEventListener("wheel", event => {
         if (Math.sign(event.deltaY) > 0) {
             cameraScale *= 0.9;
         } else {
@@ -485,6 +508,27 @@ function redraw(timestamp) {
                         peppers = peppers.filter(function(pepper) {
                             return (cursorX != Math.floor(pepper.x) || cursorY != Math.floor(pepper.y));
                         });
+                        break;
+                    case '#': //next cache
+                        if (!keyDown) {
+                            saveSession();
+                            let load = -1;
+                            for (let i = 0; i < cachedMaps.length; i++) {
+                                if (cachedMaps[i] == mapFilename) {
+                                    load = i+1;
+                                    break;
+                                }
+                            }
+                            if (load != -1) {
+                                load = load % cachedMaps.length;
+                                mapFilename = cachedMaps[load];
+                                document.getElementById('mapName').value = mapFilename;
+                                localStorage.setItem("#mapFilename", mapFilename);
+                                processJSON(localStorage.getItem(mapFilename));
+                            }
+                            refreshCacheList();
+                            keyDown = true;
+                        }
                         break;
                     case '[': //previous tile
                     if (!keyDown) {
@@ -783,8 +827,8 @@ function redraw(timestamp) {
     if (!playMode) {
 
         context.fillStyle = '#00000088';
-        context.fillRect(0, 0, 105, 158);
-        context.drawImage(tile[currentTile], 0,0, tileWidth, tileHeight, 10,63, 83,83);
+        context.fillRect(0, 0, 105, 183);
+        context.drawImage(tile[currentTile], 0,0, tileWidth, tileHeight, 10,88, 83,83);
 
         context.font = "24px Arial";
         context.strokeStyle = 'white';
@@ -801,12 +845,14 @@ function handleUpload(files) {
     if (files.length !== 1) return;
 
     mapFilename = files[0].name;
+    document.getElementById('mapName').value = mapFilename;
     console.log("Loading " + mapFilename + "...");
 
     let reader = new FileReader();
     reader.onload = function(){
         processJSON(reader.result);
         document.getElementById('uploader').value = ''
+        saveSession();
     };
     reader.readAsText(files[0]);
 

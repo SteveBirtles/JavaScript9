@@ -12,10 +12,12 @@
       <div id="hud">
           <div style="position: absolute; margin: 10px; color:#00000000; ">
               <input type="file" accept='.json' id="uploader" onchange="handleUpload(this.files)">
-                <br/>
+              <br/>
+              <input type="text" id="mapName" style="width:80px; height:15px; margin-top: 5px;">
+              <br/>
               <button style="width:83px; margin-top:5px;" onclick="handleDownload()">Save file</button>
           </div>
-          <div id="helpText" style="position: absolute; margin: 10px; left:0px; top:160px; color:silver; z-index: 99;">
+          <div id="helpText" style="position: absolute; margin: 10px; left:0px; top:175px; color:silver; z-index: 99;">
               <div>Arrows / right click drag - Move map</div>
               <div>PageUp / PageDown / Mouse Wheel - Zoom</div>
               <div>Home - Reset zoom</div>
@@ -37,6 +39,13 @@
               <div>G - Toggle grid</div>
               <div>H - Toggle help</div>
               <div>R - Toggle play mode</div>
+              <div># - Circulate cached maps</div>
+
+              <br />
+              <span style="font-weight: bold;">Cached Maps:</span>
+              <ul id="cachedMaps" style="padding-left: 15px; list-style-type:none;">
+              </ul>
+
           </div>
       </div>
       <canvas id="tileCanvas" />
