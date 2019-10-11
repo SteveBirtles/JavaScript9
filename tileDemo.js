@@ -223,9 +223,9 @@ function processJSON(json) {
         });
 
         for (let pepper of peppers) {
-            pepper.startX = pepper.x;
-            pepper.startY = pepper.y;
-            pepper.startD = pepper.d;
+            pepper.x = pepper.startX;
+            pepper.y = pepper.startY;
+            pepper.d = pepper.startD;
         }
 
     }
@@ -432,7 +432,7 @@ function redraw(timestamp) {
 
                       let free = true;
                       for (let pepper of peppers) {
-                          if (pepper.x == cursorX && pepper.y == cursorY) {
+                          if (pepper.startX == cursorX && pepper.startY == cursorY) {
                             free = false;
                             break;
                           }
@@ -443,7 +443,15 @@ function redraw(timestamp) {
                         if (key == '0') n = 9;
                         if (key == '-') n = 10;
                         if (key == '=') n = 11;
-                        peppers.push({x: cursorX, y:cursorY, d: (cursorParity ? -1 : 1), n});
+                        peppers.push({
+                                        x: cursorX,
+                                        y: cursorY,
+                                        d: (cursorParity ? -1 : 1),
+                                        startX: cursorX,
+                                        startY: cursorY,
+                                        startD: (cursorParity ? -1 : 1),
+                                        n
+                                    });
                       }
 
                       keyDown = true;
@@ -560,11 +568,6 @@ function redraw(timestamp) {
                         saveSession();
                         playMode = true;
                         document.getElementById("hud").style.display = "none";
-                        for (let pepper of peppers) {
-                            pepper.startX = pepper.x;
-                            pepper.startY = pepper.y;
-                            pepper.startD = pepper.d;
-                        }
                         keyDown = true;
                     }
                     break;
@@ -618,7 +621,11 @@ function redraw(timestamp) {
                 switch (key) {
                     case 'r':
                     if (!keyDown) {
-                        saveSession();
+                        for (let pepper of peppers) {
+                            pepper.x = pepper.startX;
+                            pepper.y = pepper.startY;
+                            pepper.d = pepper.startD;
+                        }
                         playMode = false;
                         document.getElementById("hud").style.display = "block";
                         keyDown = true;
@@ -628,6 +635,8 @@ function redraw(timestamp) {
         }
 
         for (let pepper of peppers) {
+
+            console.log(`${pepper.x}, ${pepper.y}, ${pepper.d}.`);
 
             if (typeof pepper.dx == "undefined") pepper.dx = 0;
             if (typeof pepper.dy == "undefined") pepper.dy = 0;
