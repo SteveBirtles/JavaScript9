@@ -349,6 +349,18 @@ function pageLoad() {
         mousePosition.y = event.clientY;
     }, false);
 
+    canvas.addEventListener('mouseout', event => {
+        if(event.relatedTarget === null) {
+            console.log("Left.");
+        }
+    }, false)
+
+    canvas.addEventListener('mouseover', event => {
+        if(event.relatedTarget === undefined) {
+          console.log("Entered.");
+        }
+    }, false)
+
     canvas.oncontextmenu = function (e) {
         e.preventDefault();
     };
