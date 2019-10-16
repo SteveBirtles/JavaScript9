@@ -356,10 +356,9 @@ function pageLoad() {
     }, false)
 
     canvas.addEventListener('mouseover', event => {
-        if(event.relatedTarget === null) {
+        if(event.relatedTarget === undefined) {
           console.log("Entered.");
         }
-        console.log(event.relatedTarget);
     }, false)
 
     canvas.oncontextmenu = function (e) {
