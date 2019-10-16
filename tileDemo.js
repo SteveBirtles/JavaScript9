@@ -349,15 +349,19 @@ function pageLoad() {
         mousePosition.y = event.clientY;
     }, false);
 
-    canvas.addEventListener('mouseout', event => {
-        if(event.relatedTarget === null) {
-            console.log("Left.");
-        }
-    }, false)
-
     canvas.addEventListener('mouseover', event => {
-        if(event.relatedTarget === undefined) {
-          console.log("Entered.");
+        if(event.buttons == 0){
+          leftMouseDown = false;
+          rightMouseDown = false;
+          console.log("off");
+        } else if (event.buttons == 1) {
+          leftMouseDown = true;
+          rightMouseDown = false;
+          console.log("right");
+        } else {
+          leftMouseDown = false;
+          rightMouseDown = true;
+          console.log("left");
         }
     }, false)
 
